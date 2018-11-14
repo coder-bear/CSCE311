@@ -12,14 +12,13 @@ if(sizeof(void*)==sizeof(int)) { //  32-bit system
   TASK_SIZE = (1UL << 47) - PAGE_SIZE;
 }
 
+int main(int argc, char* argv[]) {
+  char *p = 0;
+  unsigned long countValid = 0;  //  Count of valid addresses
+  unsigned long countInvalid = 0;  //  Count of invalid addresses
 
-
-/*
-bool valid;
-//  Sets boolean of pointer validity to false
-markInvalid() {
-  valid = false;
+  for (; (unsigned long)p < TASK_SIZE; p += PAGE_SIZE*1024) {
+    int r = readAddr(p);
+    //  TODO: get/ print info
+  }
 }
-
-signal(SIGSEGV, markInvalid);
-*/
