@@ -1,0 +1,83 @@
+diff -urN linux-4.4.163/Makefile linux-4.4.163-orig/Makefile
+--- linux-4.4.163/Makefile	2018-11-17 23:43:36.000000000 -0500
++++ linux-4.4.163-orig/Makefile	2018-11-10 10:41:44.000000000 -0500
+@@ -916,7 +916,7 @@
+ 
+ 
+ ifeq ($(KBUILD_EXTMOD),)
+-core-y		+= kernel/ certs/ mm/ fs/ ipc/ security/ crypto/ block/ readAddr/
++core-y		+= kernel/ certs/ mm/ fs/ ipc/ security/ crypto/ block/
+ 
+ vmlinux-dirs	:= $(patsubst %/,%,$(filter %/, $(init-y) $(init-m) \
+ 		     $(core-y) $(core-m) $(drivers-y) $(drivers-m) \
+diff -urN linux-4.4.163/arch/x86/entry/syscalls/syscall_64.tbl linux-4.4.163-orig/arch/x86/entry/syscalls/syscall_64.tbl
+--- linux-4.4.163/arch/x86/entry/syscalls/syscall_64.tbl	2018-11-17 23:44:39.000000000 -0500
++++ linux-4.4.163-orig/arch/x86/entry/syscalls/syscall_64.tbl	2018-11-10 10:41:44.000000000 -0500
+@@ -332,7 +332,6 @@
+ 323	common	userfaultfd		sys_userfaultfd
+ 324	common	membarrier		sys_membarrier
+ 325	common	mlock2			sys_mlock2
+-326	common	readAddr		sys_readAddr
+ 
+ #
+ # x32-specific system call numbers start at 512 to avoid cache impact
+diff -urN linux-4.4.163/include/linux/syscalls.h linux-4.4.163-orig/include/linux/syscalls.h
+--- linux-4.4.163/include/linux/syscalls.h	2018-11-17 23:45:25.000000000 -0500
++++ linux-4.4.163-orig/include/linux/syscalls.h	2018-11-10 10:41:44.000000000 -0500
+@@ -889,6 +889,4 @@
+ 
+ asmlinkage long sys_mlock2(unsigned long start, size_t len, int flags);
+ 
+-asmlinkage long sys_readAddr(void *p);
+-
+ #endif
+diff -urN linux-4.4.163/include/readAddr/readAddr.h linux-4.4.163-orig/include/readAddr/readAddr.h
+--- linux-4.4.163/include/readAddr/readAddr.h	2018-11-18 08:39:39.000000000 -0500
++++ linux-4.4.163-orig/include/readAddr/readAddr.h	1969-12-31 19:00:00.000000000 -0500
+@@ -1,9 +0,0 @@
+-/**
+- * Copyright 2018 Hunter Damron, Graham McDonald, Reed Segars
+- */
+-
+-struct readAddr_t {
+-  bool initialized;
+-  unsigned long start, end;
+-  char flags;  // Least significant 3 bits are read (0), write (1), exec (2)
+-};
+diff -urN linux-4.4.163/readAddr/Makefile linux-4.4.163-orig/readAddr/Makefile
+--- linux-4.4.163/readAddr/Makefile	2018-11-17 23:46:27.000000000 -0500
++++ linux-4.4.163-orig/readAddr/Makefile	1969-12-31 19:00:00.000000000 -0500
+@@ -1 +0,0 @@
+-obj-y := readAddr.o
+diff -urN linux-4.4.163/readAddr/readAddr.c linux-4.4.163-orig/readAddr/readAddr.c
+--- linux-4.4.163/readAddr/readAddr.c	2018-11-18 08:38:02.000000000 -0500
++++ linux-4.4.163-orig/readAddr/readAddr.c	1969-12-31 19:00:00.000000000 -0500
+@@ -1,28 +0,0 @@
+-#include <linux/kernel.h>
+-#include <linux/sched.h>
+-#include <linux/mm_types.h>
+-#include <linux/types.h>
+-
+-#include <readAddr/readAddr.h>
+-
+-asmlinkage struct readAddr_t sys_readAddr(void *p) {
+-  uintptr_t pint = (uintptr_t)p;
+-  struct struct_mm mm = current->mm;
+-  vm_area_struct *loc = mm->mmap;
+-  while (loc->vm_next) {
+-    if (pint > loc->vm_end) {
+-      break;
+-    else if (pint >= loc->vm_start) {
+-      struct readAddr_t map_place;
+-      map_place.initialized = true;
+-      map_place.start = loc->vm_start;
+-      map_place.end = loc-vm_end;
+-      map_place.flags = 7 & loc->flags;
+-      return map_place;
+-    }
+-    loc = loc->vm_next;
+-  }
+-  struct readAddr_t uninit;
+-  uninit.initialized = false;
+-  return uninit;
+-}

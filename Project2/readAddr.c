@@ -1,5 +1,7 @@
 #include <unistd.h>
-//  TODO: Include asm/current.h
+#include <stdio.h>
+#include <sys/syscalls.h>
+#include <readAddr/readAddr.h>
 
 unsigned long PAGE_SIZE = 0;
 unsigned long TASK_SIZE = 0;
@@ -18,7 +20,17 @@ int main(int argc, char* argv[]) {
   unsigned long countInvalid = 0;  //  Count of invalid addresses
 
   for (; (unsigned long)p < TASK_SIZE; p += PAGE_SIZE*1024) {
-    int r = readAddr(p);
-    //  TODO: get/ print info
+    struct readAddr_t data = sys_readAddr((void*)p);
+    printf("Address %p ", (void*)p);
+    if (data.initialized) {
+      printf("initialized in data segment [%lu to %lu] with permissions (%c%c%c)",
+        data.start, data.end,
+        ((data.flags & 1) ? 'r' : '-'),
+        ((data.flags & 2) ? 'w' : '-'),
+        ((data.flags & 4) ? 'e' : '-')
+      );
+    } else {
+      printf("uninitialized\n");
+    }
   }
 }
