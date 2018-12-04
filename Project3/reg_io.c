@@ -2,11 +2,12 @@
  * Project 3 -- reg_io.c
  * Finds the number of each character in given file
  * Includes counts of spaces and new lines
- * Execution time: 19 ms
 **/
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "util.h"
 
 int main() {
 
@@ -19,11 +20,9 @@ int main() {
     count[c]+= 1;
 
   }
-  for(int i=0; i<256; i++) {
-    if(count[i] > 0) {  // if there is at least 1 occurrance of char
-      printf("char %c: %d times\n" , i, count[i]);  // print the char and how many occurrances
-    }
-  }
+
+  printcounts(count);
+
   fclose(fp);
   return 0;
 }
