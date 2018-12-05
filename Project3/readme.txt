@@ -22,7 +22,7 @@ To run:
 
 Team Contributions:
   Hunter Damron worked on:
-      Part 2
+      Part 1 & Part 2
 
   Graham McDonald worked on:
       Readme/Report
