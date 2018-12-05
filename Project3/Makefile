@@ -8,7 +8,7 @@ $(FILES): %: $(BIN)/%
 $(BIN)/%: %.c util.h | $(BIN)
 	$(CC) -o $@ $<
 
-$(BIN)/:
+$(BIN):
 	@mkdir -p $@
 
 clean:

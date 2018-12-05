@@ -19,6 +19,15 @@ gcc mmf_io.c
 To run:
 ./a.out FILENAME
 
+Part 2 - CWD Module
+------
+To compile (within directory cwd_driver):
+make
+
+To run:
+sudo insmod cwd_driver.ko
+cat /proc/cwd
+sudo rmmod cwd_driver
 
 Team Contributions:
   Hunter Damron worked on:
